@@ -61,7 +61,6 @@
                 </div>
               </div>
                 <div class="output">
-
                 </div>
             </div>
           </div>
@@ -69,6 +68,7 @@
       </div>
     </div>
     <!-- Modal -->
+    
     <div
       class="modal fade"
       id="staticBackdrop"
@@ -116,7 +116,93 @@
         </div>
       </div>
     </div>
+
+
+
+    <div
+  class="modal fade"
+  id="edit"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="editLabel"
+  aria-hidden="true"
+    >
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editLabel">Details <span id="updateCon"></span> </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+      <form action="update.php" method="post" id="updateContact">
+                <div class="row g-2">
+                <input type="text" id="editId" name="id" class="form-control d-none">
+                    <div class="col-auto">
+                        <label for="editname">Name</label>
+                        <input type="text" id="editname" name="name" class="form-control">
+                    </div>
+                    <div class="col-auto">
+                        <label for="editphone">Phone</label>
+                        <input type="number" id="editphone" name="phone" class="form-control">
+                    </div>
+                </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="submit" class="btn btn-primary">Update</button>
+          </div>
+          </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+    <div
+  class="modal fade"
+  id="detail"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="detailLabel"
+  aria-hidden="true"
+    >
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="detailLabel">Details <span id="result"></span> </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+          <h1 class="name-arr"></h1>
+          <p >Number - <span class="ph-arr"></span> </p>
+    </div>
+  </div>
+</div>
+
+
+
+
   </body>
+
   <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="node_modules/jquery/dist/jquery.min.js"></script>
   <script>
@@ -147,6 +233,56 @@
         }
       })
     })
+    //delete
+    $(".output").delegate(".del","click",function(){
+      let currentId = $(this).attr("data-id");
+      $.get(`delete.php?id=${currentId}`,function(data){
+        if(data == "success"){
+          showList();
+      } 
+      })
+    })
+    //detail
+    $(".output").delegate(".contact","click",function(e){
+      // e.stopPropagation();
+      let currentId = $(this).attr("data-id");
+      $.get("detail.php?id="+currentId,function(data){
+        let array = JSON.parse(data);
+        $(".name-arr").text(array.name);
+        $(".ph-arr").text(array.phone);
+        $("#detail").modal("show");
+      })
+    })
+    //update
+    $(".output").delegate(".edit","click",function(e){
+      e.stopPropagation();
+      let currentId = $(this).attr("data-id");
+      $.get("detail.php?id="+currentId,function(data){
+        let array = JSON.parse(data);
+        console.log(array);
+        $("#editId").val(array.id);
+        $("#editname").val(array.name);
+        $("#editphone").val(array.phone);
+        $("#edit").modal("show");
+      })
+    })
+
+    $("#updateContact").on("submit",function(e){
+      e.preventDefault();
+
+      let newData = $(this).serialize();
+
+      $.post($(this).attr("action"),newData,function(data){
+        if(data === "update success"){
+          $("#updateCon").html(`<span class="badge rounded-pill bg-success"><i class="fa-solid fa-check"></i></span>`)
+          showList();
+          $("#edit").modal("hide")
+        }else{
+          $("#updateCon").html(`<span class="badge badge-pill badge-danger"><i class="fa-solid fa-xmark"></i></span>`)
+        }
+      })
+    })
+
     showList();
   </script>
 </html>
