@@ -234,7 +234,8 @@
       })
     })
     //delete
-    $(".output").delegate(".del","click",function(){
+    $(".output").delegate(".del","click",function(e){
+      e.stopPropagation();
       let currentId = $(this).attr("data-id");
       $.get(`delete.php?id=${currentId}`,function(data){
         if(data == "success"){
