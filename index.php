@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <link
+      rel="stylesheet"
+      href="node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+      integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <style>
+    td {
+      vertical-align: middle;
+    }
+    .card-column{
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(20rem,1fr));
+      grid-column-gap: 1rem;
+      grid-row-gap: 1rem;
+
+    }
+  </style>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <div class="card my-5">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <h4>Contact App</h4>
+                <div>
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#staticBackdrop"
+                  >
+                    <i class="fa-solid fa-circle-plus"></i>
+                  </button>
+                  <button
+                    class="btn btn-outline-info"
+                    onclick="showList()"
+                  >
+                    <i class="fa-solid fa-list"></i>
+                  </button>
+                  <button
+                    class="btn btn-outline-secondary"
+                    onclick="showGrid()"
+                  >
+                  <i class="fa-solid fa-grip"></i>                  
+                </button>
+                </div>
+              </div>
+                <div class="output">
+
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="staticBackdrop"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      tabindex="-1"
+      aria-labelledby="staticBackdropLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Add Contact <span id="result"></span> </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form action="save.php" method="post" id="addContact">
+                <div class="row g-2">
+                    <div class="col-auto">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" class="form-control">
+                    </div>
+                    <div class="col-auto">
+                        <label for="phone">Phone</label>
+                        <input type="number" id="phone" name="phone" class="form-control">
+                    </div>
+                </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="node_modules/jquery/dist/jquery.min.js"></script>
+  <script>
+
+    function showList(url){
+      $.get("list.php",function(data){
+        $(".output").html(data);
+      })
+    }
+
+    function showGrid(){
+      $.get("grid.php",function(data){
+        $(".output").html(data);
+      })
+    }
+
+    $("#addContact").on("submit",function(e){
+      e.preventDefault();
+      let inputData = $(this).serialize();
+      // console.log(inputData);
+      $.post($(this).attr("action"),inputData,function(data){
+        if(data === 'success'){
+          $("#result").html(`<span class="badge rounded-pill bg-success"><i class="fa-solid fa-check"></i></span>`)
+          $("input").val("");
+          showList();
+        }else{
+          $("#result").html(`<span class="badge badge-pill badge-danger"><i class="fa-solid fa-xmark"></i></span>`)
+        }
+      })
+    })
+    showList();
+  </script>
+</html>
